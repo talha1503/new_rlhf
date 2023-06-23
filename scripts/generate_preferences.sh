@@ -1,0 +1,1 @@
+python ./scripts/synthetic_preferences.py

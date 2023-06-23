@@ -1,0 +1,5 @@
+PPO Train:
+python .\experiments\lending_demo.py --rl_agent=ppo --num_steps=200000 --include_summary_stats --K_epochs=80 --lr_actor=0.0003 --lr_critic=0.001 --max_ep_len=5000 --update_timestep=200 --sampling_flag
+
+PPO Test:
+python .\experiments\lending_demo.py --rl_agent=ppo --num_steps=200000 --include_summary_stats --max_ep_len=5000 --test_mode
