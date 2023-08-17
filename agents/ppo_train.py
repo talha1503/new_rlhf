@@ -98,7 +98,7 @@ def train(env, num_steps, include_summary_stats, checkpoint_path, simulation_ite
 
             equalized_group_dict = update_equalized_group_dict(equalized_group_dict, env.state.group_id,
                                                                env.state.will_default, action)
-            reward = reward_function(env, action, prev_bank_cash, current_bank_cash, equalized_group_dict, use_reward_model=use_reward_model)
+            reward = reward_function(env, action, prev_bank_cash, current_bank_cash, equalized_group_dict, use_reward_model=use_reward_model, acceptance_rates=env.state.acceptance_rates)
 
             # Do we save only the reward and not the states
             # saving reward and is_terminals

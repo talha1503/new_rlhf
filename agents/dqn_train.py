@@ -196,7 +196,7 @@ def train_dqn(env, simulation_iterator, include_summary_stats, num_steps):
                                                                env.state.will_default, action)
 
             reward = reward_function(env, action, prev_bank_cash, current_bank_cash,
-                                                             equalized_group_dict)
+                                                             equalized_group_dict, acceptance_rates=env.state.acceptance_rates)
 
 
             replay_memory.append(

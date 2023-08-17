@@ -22,7 +22,7 @@ import sys
 
 sys.path.append("D:\\Fairness\\rlhf-fairness")
 import os
-import tkinter
+# import tkinter
 import core
 import itertools
 from absl import app
@@ -52,7 +52,7 @@ flags.DEFINE_string('load_checkpoint_path', None,
 flags.DEFINE_string('rl_agent', None,
                     'Specify the rl agent to be used'
                     )
-flags.DEFINE_string('classifier_name', "base_classifier", 'Specify the supervised learning model to be used')
+flags.DEFINE_string('classifier_name', "logistic", 'Specify the supervised learning model to be used')
 
 # Hyperparameters
 flags.DEFINE_bool('equalize_opportunity', False, 'If true, apply equality of opportunity constraints.')
@@ -66,10 +66,13 @@ flags.DEFINE_float('cluster_shift_increment', 0.01, '')
 # Sampling
 flags.DEFINE_bool('sampling_flag', False, 'If true, then using the following parameter ranges.')
 flags.DEFINE_list('policy_options', ["equalize_opportunity"], 'The grid for the policy of the agent.')
-flags.DEFINE_list('interest_rate_range', [1.0], 'The grid for the initial interest rate range.')
-flags.DEFINE_list('bank_starting_cash_range', [10000, 20000, 30000, 40000, 50000],
+flags.DEFINE_list('interest_rate_range', [1.0, 3.0, 8.0], 'The grid for the initial interest rate range.')
+flags.DEFINE_list('bank_starting_cash_range', [10000],
                   'The grid for the initial bank starting cash value.')
-flags.DEFINE_list('seed_range', [1], '')
+# flags.DEFINE_list('interest_rate_range', [1.0], 'The grid for the initial interest rate range.')
+# flags.DEFINE_list('bank_starting_cash_range', [10000],
+                  # 'The grid for the initial bank starting cash value.')
+flags.DEFINE_list('seed_range', [1, 20, 100], '')
 flags.DEFINE_bool('include_summary_stats', False, 'If true, include summary statistics in the model')
 
 # PPO

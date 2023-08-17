@@ -1,0 +1,14 @@
+For ppo_fair_trajectories_new: 
+
+DELAYED_IMPACT_CLUSTER_PROBS = (
+    (0, 0, 0, 0, 0, 0.5, 0.5),
+    (0, 0, 0.3, 0.3, 0.4, 0.0, 0.0),
+)
+
+
+for ppo_fair_trajectories_new_2: 
+
+DELAYED_IMPACT_CLUSTER_PROBS = (
+    (0, 0, 0, 0, 0, 0.5, 0.5),
+    (0.6, 0.4, 0, 0, 0.0, 0.0),
+)

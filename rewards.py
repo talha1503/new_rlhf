@@ -236,7 +236,8 @@ def reward_function(env,
                     bank_cash_multiplier=1,
                     tpr_diff_multiplier=10,
                     use_reward_model=False,
-                    reward_model_path="./models/reward_model_fair_rule_based.pt"
+                    reward_model_path="./models/reward_model_fair_rule_based.pt",
+                    acceptance_rates=None
                     ):
     """
     Description:
@@ -254,24 +255,49 @@ def reward_function(env,
         if action == 0:
             return 0
 
-        if current_bank_cash > prev_bank_cash:
-            bank_cash_reward = 1
-        elif current_bank_cash <= prev_bank_cash:
-            bank_cash_reward = -1
+#         if current_bank_cash > prev_bank_cash:
+#             bank_cash_reward = 1
+#         elif current_bank_cash <= prev_bank_cash:
+#             bank_cash_reward = -1
 
-        if equalized_group_dict['tp_0'] + equalized_group_dict['fn_0'] == 0:
-            tpr_0 = 0
-        else:
-            tpr_0 = equalized_group_dict['tp_0'] / (equalized_group_dict['tp_0'] + equalized_group_dict['fn_0'])
+#         if equalized_group_dict['tp_0'] + equalized_group_dict['fn_0'] == 0:
+#             tpr_0 = 0
+#         else:
+#             tpr_0 = equalized_group_dict['tp_0'] / (equalized_group_dict['tp_0'] + equalized_group_dict['fn_0'])
 
-        if equalized_group_dict['tp_1'] + equalized_group_dict['fn_1'] == 0:
-            tpr_1 = 0
-        else:
-            tpr_1 = equalized_group_dict['tp_1'] / (equalized_group_dict['tp_1'] + equalized_group_dict['fn_1'])
+#         if equalized_group_dict['tp_1'] + equalized_group_dict['fn_1'] == 0:
+#             tpr_1 = 0
+#         else:
+#             tpr_1 = equalized_group_dict['tp_1'] / (equalized_group_dict['tp_1'] + equalized_group_dict['fn_1'])
 
-        tpr_diff = abs(tpr_0 - tpr_1)
-        # For fair: (bank_cash_multiplier * bank_cash_reward) - (tpr_diff_multiplier * tpr_diff) 10 x tpr_diff_multiplier
-        return (bank_cash_multiplier * bank_cash_reward) - (tpr_diff_multiplier * tpr_diff)
+#         tpr_diff = abs(tpr_0 - tpr_1)
+#         # For fair: (bank_cash_multiplier * bank_cash_reward) - (tpr_diff_multiplier * tpr_diff) 10 x tpr_diff_multiplier
+#         # return (bank_cash_multiplier * bank_cash_reward) - (tpr_diff_multiplier * tpr_diff)
+        history = env._get_history()
+        loan_distriubtion = {0: {"total": 0, "approved": 0 }, 1: {"total": 0, "approved": 0 } }
+        acceptance_rates = []
+        for history_item in history:
+          state = history_item.state
+
+          if history_item.action == 1:
+            loan_distriubtion[state.group_id]["approved"] += 1
+          loan_distriubtion[state.group_id]["total"] += 1
+
+          if loan_distriubtion[0]["total"] == 0:
+            acceptance_rates.append(( 0,loan_distriubtion[1]["approved"]/loan_distriubtion[1]["total"]))
+
+          elif loan_distriubtion[1]["total"] == 0:
+            acceptance_rates.append(( loan_distriubtion[0]["approved"]/loan_distriubtion[0]["total"],0))
+
+          else:
+            acceptance_rates.append(( loan_distriubtion[0]["approved"]/loan_distriubtion[0]["total"],loan_distriubtion[1]["approved"]/loan_distriubtion[1]["total"]))
+        group_0_sum = sum([x[0] for x in acceptance_rates])
+        group_1_sum = sum([x[1] for x in acceptance_rates])
+        # group_0_sum = acceptance_rates[-1][0]
+        # group_1_sum = acceptance_rates[-1][1]
+        reward = abs(group_0_sum-group_1_sum)
+        return reward
+        # return (tpr_diff_multiplier * tpr_diff)
 
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

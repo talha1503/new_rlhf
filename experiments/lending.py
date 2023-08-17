@@ -90,7 +90,7 @@ class Experiment(core.Params):
         cluster_shift_increment=self.cluster_shift_increment,
     )
     env = lending.DelayedImpactEnv(env_params)
-    if rl_agent:
+    if rl_agent!='random':
         agent = None
     else:
         agent_params = classifier_agents.ScoringAgentParams(

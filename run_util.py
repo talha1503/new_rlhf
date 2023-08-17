@@ -23,7 +23,8 @@ from __future__ import print_function
 from absl import flags
 import gin
 import tqdm
-from agents import ppo_train, q_learning_train, dqn_train, ppo_test
+from agents import ppo_train, q_learning_train, dqn_train, ppo_test, cleanrl_ppo
+import random
 
 FLAGS = flags.FLAGS
 
@@ -55,13 +56,26 @@ def run_simulation(env, agent, metrics, num_steps, rl_agent=None, seed=100, agen
     simulation_iterator = tqdm.trange if FLAGS.use_tqdm else range
     if rl_agent == 'ppo':
         if not test_mode:
-            ppo_train.train(env, num_steps, include_summary_stats, model_checkpoint_path, simulation_iterator, max_ep_len, update_timestep, K_epochs, lr_actor, lr_critic, load_checkpoint_path, use_reward_model)
-        else:
-            ppo_test.test(env, include_summary_stats, model_checkpoint_path, num_steps, max_ep_len)
+            # ppo_train.train(env, num_steps, include_summary_stats, model_checkpoint_path, simulation_iterator, max_ep_len, update_timestep, K_epochs, lr_actor, lr_critic, load_checkpoint_path, use_reward_model)
+            cleanrl_ppo.train(env)
+        # else:
+        #     ppo_test.test(env, include_summary_stats, model_checkpoint_path, num_steps, max_ep_len)
     elif rl_agent == 'dqn':
         dqn_train.train_dqn(env, simulation_iterator, include_summary_stats, num_steps)
     elif rl_agent == 'qlearning':
         q_learning_train.train_qlearning(env, num_steps, simulation_iterator)
+    elif rl_agent == 'random':
+        for _ in simulation_iterator(num_steps):
+            agent.action_space, agent.observation_space = (env.action_space,
+                                                               env.observation_space)
+            
+            # action = agent.act(observation, done)
+            action = random.randint(0, 1)
+            # print(type(action))
+            # TODO(): Remove reward from this loop.
+            observation, reward, done, _ = env.step(action)
+            if done:
+                break
     else:
         for _ in simulation_iterator(num_steps):
             # Update the agent with any changes to the observation or action space.
@@ -73,7 +87,6 @@ def run_simulation(env, agent, metrics, num_steps, rl_agent=None, seed=100, agen
             observation, reward, done, _ = env.step(action)
             if done:
                 break
-
     print("Measuring metrics")
     if isinstance(metrics, list):
         return [metric.measure(env) for metric in metrics]

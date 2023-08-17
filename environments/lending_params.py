@@ -203,7 +203,7 @@ def _credit_cluster_builder(group_membership,
 # )
 
 DELAYED_IMPACT_CLUSTER_PROBS = (
-    (0, 0, 0, 0, 0, 0.5, 0.5),
+    (0.0, 0.1, 0.1, 0.2, 0.3, 0.3, 0.0),
     (0.1, 0.1, 0.2, 0.3, 0.3, 0.0, 0.0),
 )
 
